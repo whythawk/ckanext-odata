@@ -4,7 +4,7 @@ ckanext-odata
 
 This CKAN extension provides a basic OData 3.0 endpoint for CKAN.
 
-The endpoint requires data to be help in the CKAN Datastore.
+The endpoint requires data to be held in the CKAN Datastore.
 
 
 Copying and License
