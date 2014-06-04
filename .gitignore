@@ -1,6 +1,5 @@
 syntax: glob
 # generic
 *.pyc
-*.swp
-*.swo
+*.sw*
 *.egg-info
