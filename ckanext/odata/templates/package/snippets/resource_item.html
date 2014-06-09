@@ -1,7 +1,9 @@
 {% ckan_extends %}
 {% block resource_item_explore %}
 {{ super() }}
-{% if res.datastore_active  == true%}
-OData {{ h.ckanext_odata_link(res.id) }}
+{% if res.datastore_active  == true %}
+{% resource 'odata/jquery.clipboard.js' %}
+{% resource 'odata/clipboard.js' %}
+OData <span data-module="clipboard">{{ h.ckanext_odata_link(res.id) }}</span>
 {% endif %}
 {% endblock %}
