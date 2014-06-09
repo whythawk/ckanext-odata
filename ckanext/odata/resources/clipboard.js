@@ -1,13 +1,13 @@
 ckan.module('clipboard', function (jQuery, _) {
   return {
       initialize: function () {
+      var el = this.el
       var $copy = $('<span> <i title="Copy to clipboard" class="icon-paste"></i></span>');
-      this.el.append($copy);
+      el.append($copy);
       $copy.clipboard({
         path: '/jquery.clipboard.swf',
         copy: function() {
-            alert('Text copied. Try to paste it now!');
-            return $(this.el).text();
+            return el.text();
       }});
     }
   };
