@@ -5,7 +5,7 @@ ckan.module('clipboard', function (jQuery, _) {
       el.clipboard({
          path: '/jquery.clipboard.swf',
          copy: function() {
-             return el.text();
+             return el.find('.data').text();
       }});
     }
   };
