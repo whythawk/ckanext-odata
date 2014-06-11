@@ -7,15 +7,14 @@ ckan.module('clipboard', function (jQuery, _) {
          copy: function() {
             function crawl(el, attr){
               // find the colour going up the dom as needed
-              var p = el.parent();
-              var v = p.css(attr);
+              var v = el.css(attr);
               if (v != 'rgba(0, 0, 0, 0)' && v != 'transparent'){
                 return v;
               }
-              if (p.prop("tagName") == 'BODY'){
+              if (el.prop("tagName") == 'BODY'){
                 return ('#FFF')
               };
-              return crawl(p, attr);
+              return crawl(el.parent(), attr);
             }
             var c1 = crawl(el, 'color');
             var c2 = crawl(el, 'background-color');
