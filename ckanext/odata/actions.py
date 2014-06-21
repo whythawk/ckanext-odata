@@ -35,11 +35,26 @@ def name_2_xml_tag(name):
 
 def replace_qs_param(qs, param, value):
     ''' Replace value in a query string. '''
-    return re.sub(
-        re.escape(param) + '=[^&]*',
-        '%s=%s' % (param, value),
-        qs
-    )
+    param_re = '^|&' + re.escape(param) + '=[^&]*'
+    if re.search(param_re, qs):
+        return re.sub(
+            param_re,
+            '%s=%s' % (param, value),
+            qs
+        )
+    if qs:
+        qs += '&%s=%s' % (param, value)
+    else:
+        qs = '%s=%s' % (param, value)
+
+def get_qs_int(param, default):
+    ''' Get a query sting param as an int '''
+    value = t.request.GET.get(param, default)
+    try:
+        value = int(value)
+    except ValueError:
+        value = default
+    return value
 
 
 def base_url():
@@ -64,8 +79,8 @@ def odata(context, data_dict):
         resource_id = uri
         filters = {}
 
-    limit = t.request.GET.get('$top', 500),
-    offset = t.request.GET.get('$skip', 0)
+    limit = get_qs_int('$top', 500)
+    offset = get_qs_int('$skip', 0)
 
     data_dict = {
         'resource_id': resource_id,
@@ -84,8 +99,9 @@ def odata(context, data_dict):
 
     num_results = result['total']
     if num_results > offset + limit:
+
         next_query_string = replace_qs_param(
-            t.request.params, '$skip', offset + limit
+            t.request.environ['QUERY_STRING'], '$skip', offset + limit
         )
     else:
         next_query_string = None
