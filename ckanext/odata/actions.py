@@ -33,6 +33,15 @@ def name_2_xml_tag(name):
     return name
 
 
+def replace_qs_param(qs, param, value):
+    ''' Replace value in a query string. '''
+    return re.sub(
+        re.escape(param) + '=[^&]*',
+        '%s=%s' % (param, value),
+        qs
+    )
+
+
 def base_url():
     ''' The base url of the OData service '''
     global _base_url
@@ -55,11 +64,14 @@ def odata(context, data_dict):
         resource_id = uri
         filters = {}
 
+    limit = t.request.GET.get('$top', 500),
+    offset = t.request.GET.get('$skip', 0)
+
     data_dict = {
         'resource_id': resource_id,
         'filters': filters,
-        'limit': t.request.GET.get('$top', 500),
-        'offset': t.request.GET.get('$skip', 0)
+        'limit': limit,
+        'offset': offset,
     }
 
     output_json = t.request.GET.get('$format') == 'json'
@@ -69,6 +81,15 @@ def odata(context, data_dict):
         result = action({}, data_dict)
     except t.ObjectNotFound:
         t.abort(404, t._('DataStore resource not found'))
+
+    num_results = result['total']
+    if num_results > offset + limit:
+        next_query_string = replace_qs_param(
+            t.request.params, '$skip', offset + limit
+        )
+    else:
+        next_query_string = None
+
 
     action = t.get_action('resource_show')
     resource = action({}, {'id': resource_id})
@@ -95,6 +116,7 @@ def odata(context, data_dict):
             'convert': convert,
             'collection': uri,
             'entries': result['records'],
+            'next_query_string': next_query_string,
         }
         t.response.headers['Content-Type'] = 'application/xml;charset=utf-8'
         return t.render('ckanext-odata/collection.xml', data)
