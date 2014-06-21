@@ -85,7 +85,8 @@ def odata(context, data_dict):
         for field in result['fields']:
             convert[field['id']] = {
                 'name': name_2_xml_tag(field['id']),
-                'type': TYPE_TRANSLATIONS[field['type']],
+                # if we have no translation for a type use Edm.String
+                'type': TYPE_TRANSLATIONS.get(field['type'], 'Edm.String'),
             }
         data = {
             'title': resource['name'],
