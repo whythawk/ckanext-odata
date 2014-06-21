@@ -35,17 +35,14 @@ def name_2_xml_tag(name):
 
 def replace_qs_param(qs, param, value):
     ''' Replace value in a query string. '''
-    param_re = '^|&' + re.escape(param) + '=[^&]*'
-    if re.search(param_re, qs):
-        return re.sub(
-            param_re,
-            '%s=%s' % (param, value),
-            qs
-        )
+    p = re.compile('(^|&)' + re.escape(param) + '=[^&]*')
+    if p.search(qs):
+        return p.sub('\\1%s=%s' % (param, value), qs)
     if qs:
         qs += '&%s=%s' % (param, value)
     else:
         qs = '%s=%s' % (param, value)
+
 
 def get_qs_int(param, default):
     ''' Get a query sting param as an int '''
