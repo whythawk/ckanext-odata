@@ -93,6 +93,8 @@ def odata(context, data_dict):
         result = action({}, data_dict)
     except t.ObjectNotFound:
         t.abort(404, t._('DataStore resource not found'))
+    except t.NotAuthorized:
+        t.abort(401, t._('DataStore resource not authourized'))
 
     num_results = result['total']
     if num_results > offset + limit:
