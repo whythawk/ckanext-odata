@@ -33,18 +33,6 @@ def name_2_xml_tag(name):
     return name
 
 
-def replace_qs_param(qs, param, value):
-    ''' Replace value in a query string. '''
-    p = re.compile('(^|&)' + re.escape(param) + '=[^&]*', re.MULTILINE)
-    if p.search(qs):
-        return p.sub('\\1%s=%s' % (param, value), qs)
-    if qs:
-        qs += '&%s=%s' % (param, value)
-    else:
-        qs = '%s=%s' % (param, value)
-    return qs
-
-
 def get_qs_int(param, default):
     ''' Get a query sting param as an int '''
     value = t.request.GET.get(param, default)
@@ -99,10 +87,7 @@ def odata(context, data_dict):
 
     num_results = result['total']
     if num_results > offset + limit:
-
-        next_query_string = replace_qs_param(
-            t.request.environ['QUERY_STRING'], '$skip', offset + limit
-        )
+        next_query_string = '$skip=%s&$top=%s' % (offset + limit, limit)
     else:
         next_query_string = None
 
