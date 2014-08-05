@@ -3,19 +3,23 @@ ckan.module('odata_copy', function (jQuery, _) {
       initialize: function () {
       var el = this.el;
       var select = el.find(".odata-select");
+      var input = el.find('input');
+      input.css( 'cursor', 'default' );
       var show = false;
-      el.find('input').attr('readonly', true).click(function () {
+      var sel = el.find('input').attr('readonly', true)
+      sel.focus(function () {
         this.select()
-      });
-        el.find('.odata-toggle').click(function () {
-            show = !show;
+                input.select();
                 select.show();
-                el.find('input').select();
-            if (show){
-            } else {
+      });
+      sel.blur(function () {
                 select.hide();
-            }
-
+      });
+      sel.click(function () {
+                input.select();
+      });
+      el.find(".odata-label").click( function (){
+                input.focus();
       });
     }
   };

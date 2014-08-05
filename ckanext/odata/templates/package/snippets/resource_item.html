@@ -4,10 +4,10 @@
 {% if res.datastore_active  == true %}
 {# {% resource 'odata/jquery.clipboard.js' %} #}
 {% resource 'odata/clipboard.js' %}<div data-module="odata_copy">
-    <span class="odata-toggle">OData endpoint</span>
-    <span class="odata-select hide">
+    <span class="odata-label">OData endpoint</span>
+    <span>
         <input type="text" value="{{ h.ckanext_odata_link(res.id) }}" />
-        <small>Use Ctr-C to copy this url</small>
+        <small class="odata-select hide">Use Ctr-C to copy this url</small>
     </span>
 </div>
 {#
