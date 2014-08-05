@@ -1,3 +1,25 @@
+ckan.module('odata_copy', function (jQuery, _) {
+  return {
+      initialize: function () {
+      var el = this.el;
+      var select = el.find(".odata-select");
+      var show = false;
+      el.find('input').attr('readonly', true).click(function () {
+        this.select()
+      });
+        el.find('.odata-toggle').click(function () {
+            show = !show;
+                select.show();
+                el.find('input').select();
+            if (show){
+            } else {
+                select.hide();
+            }
+
+      });
+    }
+  };
+});
 ckan.module('clipboard', function (jQuery, _) {
   return {
       initialize: function () {
