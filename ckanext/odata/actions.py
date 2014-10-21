@@ -28,8 +28,19 @@ _base_url = None
 
 def name_2_xml_tag(name):
     ''' Convert a name into a xml safe name. '''
-    name = re.sub(' ', '_', name)
-    name = re.sub('[^a-zA-Z0-9_\-]', '', name)
+    #name = name.decode('utf-8')
+    #name = re.sub(u' ', '_', name)
+    #mpa = dict.fromkeys(range(32))
+    #name = name.translate(mpa)
+    # leave well-formed XML Element char only
+    name = re.sub(ur'[^:A-Z_a-z\u00C0-\u00D6\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-.0-9\u00B7\u0300-\u036F\u203F-\u2040]', '', name)
+    #name = re.sub(u'[\"\'<>&/]', '', name)
+    # add '_' to non-NameStart char
+    name = re.sub(ur'(?P<q>^[-.0-9\u00B7#\u0300-\u036F\u203F-\u2040])', '_\g<q>', name, flags=re.M)
+
+    if name == '':
+        name = 'NaN'
+
     return name
 
 
@@ -119,5 +130,5 @@ def odata(context, data_dict):
             'entries': result['records'],
             'next_query_string': next_query_string,
         }
-        t.response.headers['Content-Type'] = 'application/xml;charset=utf-8'
+        t.response.headers['Content-Type'] = 'application/atom+xml;type=feed;charset=utf-8'
         return t.render('ckanext-odata/collection.xml', data)
