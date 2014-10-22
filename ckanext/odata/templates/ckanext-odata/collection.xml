@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<feed xml:base="https://{{ api_server }}{{ api_path }}" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+<feed xml:base="{{ base_url }}{{ collection }}" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
   <title type="text">{{ title }}</title>
   <id>{{ base_url }}{{ collection }}</id>
   <updated>{{ updated }}Z</updated>
-  <link rel="self" title="{{ collection }}" href="https://{{ api_server }}{{ api_path }}/{{ collection }}" />
+  <link rel="self" title="{{ collection }}" href="https://{{ base_url }}/{{ collection }}" />
   {% for entry in entries %}
   <entry>
-      <id>{{ base_url }}/{{ collection }}({{ entry._id }})</id>
-    <title type="text"></title>
+    <id>{{ base_url }}/{{ collection }}({{ entry._id }})</id>
+    <title type="text">ckan</title>
     <updated>{{ updated }}Z</updated>
     <author>
-      <name />
+      <name>ckan</name>
     </author>
     <category term="ckan.odata" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
     <content type="application/xml">
