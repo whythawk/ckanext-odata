@@ -27,9 +27,25 @@ _base_url = None
 
 
 def name_2_xml_tag(name):
-    ''' Convert a name into a xml safe name. '''
-    name = re.sub(' ', '_', name)
-    name = re.sub('[^a-zA-Z0-9_\-]', '', name)
+    ''' Convert a name into a xml safe name. 
+    
+    Note: From w3c specs(http://www.w3.org/TR/REC-xml/#NT-NameChar), a valid XML element name must follow these naming rules:
+    NameStartChar      ::=      ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | \
+    [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+    NameChar       ::=      NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+
+    '''
+
+    # leave well-formed XML element characters only
+    name = re.sub(ur'[^:A-Z_a-z\u00C0-\u00D6\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-.0-9\u00B7\u0300-\u036F\u203F-\u2040]', '', name)
+
+    # add '_' in front of non-NameStart characters
+    name = re.sub(ur'(?P<q>^[-.0-9\u00B7#\u0300-\u036F\u203F-\u2040])', '_\g<q>', name, flags=re.M)
+
+    # No valid XML element at all
+    if name == '':
+        name = 'NaN'
+
     return name
 
 
@@ -119,5 +135,6 @@ def odata(context, data_dict):
             'entries': result['records'],
             'next_query_string': next_query_string,
         }
-        t.response.headers['Content-Type'] = 'application/xml;charset=utf-8'
+        # this header is need to interop with MS Excel
+        t.response.headers['Content-Type'] = 'application/atom+xml;type=feed;charset=utf-8'
         return t.render('ckanext-odata/collection.xml', data)
