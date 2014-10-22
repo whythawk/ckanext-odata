@@ -119,5 +119,5 @@ def odata(context, data_dict):
             'entries': result['records'],
             'next_query_string': next_query_string,
         }
-        t.response.headers['Content-Type'] = 'application/xml;charset=utf-8'
+        t.response.headers['Content-Type'] = 'application/atom+xml;type=feed;charset=utf-8'
         return t.render('ckanext-odata/collection.xml', data)
