@@ -79,7 +79,7 @@ def base_url():
 def odata(context, data_dict):
 
     uri = data_dict.get('uri')
-
+    
     match = re.search(r'^(.*)\((\d+)\)$', uri)
     if match:
         resource_id = match.group(1)
@@ -89,33 +89,52 @@ def odata(context, data_dict):
         row_id = None
         resource_id = uri
         filters = {}
-
-    limit = get_qs_int('$top', 500)
-    offset = get_qs_int('$skip', 0)
-
-    data_dict = {
-        'resource_id': resource_id,
-        'filters': filters,
-        'limit': limit,
-        'offset': offset,
-    }
-
+    
     output_json = t.request.GET.get('$format') == 'json'
+    
+    # Ignore $limit & $top paramters if $sqlfilter is specified
+    # as they should be specified by the sql query
+    if t.request.GET.get('$sqlfilter'):
+        action = t.get_action('datastore_search_sql')
+        
+        # Replace double quotes with single quotes to avoid syntax errors.
+        # Not sure if this will cause us any trouble later.
+        query = t.request.GET.get('$sqlfilter').replace('"','\'')
+        sql = "SELECT * FROM \"%s\" %s"%(resource_id,query)
+        
+        data_dict = {
+            'sql': sql
+        }      
+    else:
+        action = t.get_action('datastore_search')
+        
+        limit = get_qs_int('$top', 500)
+        offset = get_qs_int('$skip', 0)
 
-    action = t.get_action('datastore_search')
+        data_dict = {
+            'resource_id': resource_id,
+            'filters': filters,
+            'limit': limit,
+            'offset': offset
+        }
+        
+
     try:
         result = action({}, data_dict)
     except t.ObjectNotFound:
         t.abort(404, t._('DataStore resource not found'))
     except t.NotAuthorized:
         t.abort(401, t._('DataStore resource not authourized'))
-
-    num_results = result['total']
-    if num_results > offset + limit:
-        next_query_string = '$skip=%s&$top=%s' % (offset + limit, limit)
+    
+    
+    if not t.request.GET.get('$sqlfilter'):
+        num_results = result['total']
+        if num_results > offset + limit:
+            next_query_string = '$skip=%s&$top=%s' % (offset + limit, limit)
+        else:
+            next_query_string = None
     else:
         next_query_string = None
-
 
     action = t.get_action('resource_show')
     resource = action({}, {'id': resource_id})
