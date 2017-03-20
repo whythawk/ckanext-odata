@@ -19,6 +19,7 @@ TYPE_TRANSLATIONS = {
     'int8': 'Edm.Int64',
     'timestamp': 'Edm.DateTime',
     'text': 'Edm.String',
+    'json': 'Edm.String',
 }
 
 
